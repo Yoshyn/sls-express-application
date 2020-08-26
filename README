@@ -1,0 +1,52 @@
+# My express sample Application Serverless
+
+Tutorial from : https://www.serverless.com/blog/serverless-express-rest-api
+
+
+## Deploy on AWS
+
+~/.aws/credentials
+```
+[my-credential-profile]
+aws_access_key_id = XXXXXXXXXXXXXXXXXXXX
+aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
+
+~/.aws/config
+```
+[profile my-credential-profile]
+region = eu-west-3
+output = json
+```
+
+`serverless deploy --aws-profile my-credential-profile`
+
+```
+export BASE_DOMAIN=$(serverless info --verbose --aws-profile my-credential-profile | grep ApiUrl: | awk '{print $2}')
+curl -H "Content-Type: application/json" -X POST ${BASE_DOMAIN}/users -d '{"userId": "yayadu92", "name": "Yassin"}'
+curl -H "Content-Type: application/json" -X POST ${BASE_DOMAIN}/users -d '{"userId": "Yosh", "name": "Sylvestre"}'
+
+curl -H "Content-Type: application/json" -X GET ${BASE_DOMAIN}/users/yayadu92
+
+curl -H "Content-Type: application/json" -X GET "${BASE_DOMAIN}/users?limit=4"
+```
+
+## Local dev
+```
+npm install
+sls dynamodb install
+ps aux | grep dynamo | grep -v grep | awk '{print $2}' | xargs kill
+```
+
+```
+sls offline start --noPrependStageInUrl
+export BASE_DOMAIN=http://localhost:3000
+curl -H "Content-Type: application/json" -X POST ${BASE_DOMAIN}/users -d '{"userId": "yayadu92", "name": "Yassin"}'
+curl -H "Content-Type: application/json" -X POST ${BASE_DOMAIN}/users -d '{"userId": "Yosh", "name": "Sylvestre"}'
+
+curl -H "Content-Type: application/json" -X GET ${BASE_DOMAIN}/users/yayadu92
+
+curl -H "Content-Type: application/json" -X GET "${BASE_DOMAIN}/users?limit=4"
+``
+
+
